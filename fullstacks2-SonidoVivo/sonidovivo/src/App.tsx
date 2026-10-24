@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import type { Product, Role, User } from './types';
-import { initialProducts } from './data/products';
+import { initialProducts } from './data/Products';
 import Header from './components/organisms/Header';
 import Login from './pages/Login';
 import Home from './pages/Home';

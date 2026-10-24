@@ -1,7 +1,7 @@
 
 import { useMemo, useState } from 'react';
 import type { Product } from '../types';
-import { categories } from '../data/products';
+import { categories } from '../data/Products';
 import ProductCard from '../components/molecules/ProductCard';
 
 interface CatalogProps {
