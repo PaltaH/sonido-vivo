@@ -1,5 +1,7 @@
 // @vitest-environment jsdom
 
+import '@testing-library/jest-dom/vitest';
+
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test } from 'vitest';
 import Orders from '../pages/Orders';
