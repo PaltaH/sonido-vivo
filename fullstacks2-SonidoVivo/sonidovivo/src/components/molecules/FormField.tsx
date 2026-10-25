@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes } from 'react';
-import Input from '../atoms/Input';
+import Input from '../atoms/input';
 
 type FormFieldProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,

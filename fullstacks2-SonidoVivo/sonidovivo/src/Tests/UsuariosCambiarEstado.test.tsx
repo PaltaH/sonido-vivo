@@ -2,8 +2,6 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { expect, test, vi } from 'vitest';
 import App from '../App';
-import Orders from '../pages/Orders';
-import { initialProducts } from '../data/products';
 import { initialUsers } from '../data/Usuarios';
 
 function start(email = 'admin@sonidovivo.cl', password = 'admin123') {

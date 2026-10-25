@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import Catalog from '../pages/Catalog';
-import { initialProducts } from '../data/products';
+import { initialProducts } from '../data/Products';
 
 function mount() { render(<Catalog products={initialProducts} onAdd={vi.fn()} />); }
 function search(value: string) {

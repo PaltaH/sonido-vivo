@@ -1,10 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
-import Button from '../components/atoms/Button';
-import Input from '../components/atoms/Input';
-import FormField from '../components/molecules/FormField';
 import ProductCard from '../components/molecules/ProductCard';
-import { initialProducts } from '../data/products';
+import { initialProducts } from '../data/Products';
 
 test('ProductCard muestra los datos recibidos y entrega el producto al agregar', () => {
   const product = initialProducts[0]; const add = vi.fn();

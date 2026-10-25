@@ -1,10 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 import Button from '../components/atoms/Button';
-import Input from '../components/atoms/Input';
-import FormField from '../components/molecules/FormField';
-import ProductCard from '../components/molecules/ProductCard';
-import { initialProducts } from '../data/products';
 
 test('Button transmite texto, tipo, clase y evento', () => {
   const click = vi.fn();
