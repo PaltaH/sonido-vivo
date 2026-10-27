@@ -1,33 +1,38 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Guitar, LogOut, ShoppingCart } from 'lucide-react';
-import type { Role } from '../../types';
+import type { Rol } from '../../types';
 
-interface HeaderProps {
-  role: Role;
-  cartCount: number;
-  onCart: () => void;
-  logout: () => void;
+interface PropiedadesEncabezado {
+  rol: Rol;
+  cantidadCarrito: number;
+  alAbrirCarrito: () => void;
+  cerrarSesion: () => void;
 }
 
-export default function Header({ role, cartCount, onCart, logout }: HeaderProps) {
-  const navigate = useNavigate();
+export default function Encabezado({
+  rol,
+  cantidadCarrito,
+  alAbrirCarrito,
+  cerrarSesion,
+}: PropiedadesEncabezado) {
+  const navegar = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const manejarCierreSesion = () => {
+    cerrarSesion();
+    navegar('/login');
   };
 
   return (
     <>
-      <div className="topbar">
+      <div className="barra-superior">
         <span>SONIDO VIVO</span>
         <span>
-          Sesión: <b>{role}</b>
+          Sesión: <b>{rol}</b>
         </span>
       </div>
 
-      <header className="navbar">
-        <Link to="/" className="brand">
+      <header className="barra-navegacion d-flex flex-column flex-lg-row">
+        <Link to="/" className="marca">
           <Guitar />
           <span>
             SONIDO VIVO
@@ -35,33 +40,33 @@ export default function Header({ role, cartCount, onCart, logout }: HeaderProps)
           </span>
         </Link>
 
-        <nav>
+        <nav className="d-flex flex-wrap justify-content-center">
           <NavLink to="/">Inicio</NavLink>
           <NavLink to="/catalogo">Catálogo</NavLink>
           <NavLink to="/tienda">Tienda y retiros</NavLink>
           <NavLink to="/pedidos">Mis pedidos</NavLink>
-          
-          {role !== 'CLIENTE' && (
+
+          {rol !== 'CLIENTE' && (
             <NavLink to="/stock">Control de stock</NavLink>
           )}
-          
-          {role === 'ADMIN' && (
+
+          {rol === 'ADMIN' && (
             <NavLink to="/usuarios">Usuarios</NavLink>
           )}
         </nav>
 
-        <div className="nav-actions">
+        <div className="acciones-navegacion">
           <button
             type="button"
-            className="cart-button"
-            onClick={onCart}
+            className="boton-carrito"
+            onClick={alAbrirCarrito}
             aria-label="Abrir carrito"
           >
             <ShoppingCart size={19} />
-            <span>{cartCount}</span>
+            <span>{cantidadCarrito}</span>
           </button>
 
-          <button type="button" className="logout" onClick={handleLogout}>
+          <button type="button" className="cerrar-sesion" onClick={manejarCierreSesion}>
             <LogOut size={16} />
             Salir
           </button>

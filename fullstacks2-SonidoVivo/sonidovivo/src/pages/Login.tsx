@@ -1,60 +1,36 @@
 import { useNavigate } from 'react-router-dom';
 import { Guitar, Music2 } from 'lucide-react';
-import LoginForm from '../components/organisms/LoginForm';
+import FormularioLogin from '../components/organisms/LoginForm';
 
-interface LoginProps {
-  onLogin: (
-    email: string,
-    password: string
-  ) => string | null;
+interface PropiedadesInicioSesion {
+  alIniciarSesion: (correo: string, contrasena: string) => string | null;
 }
 
-export default function Login({
-  onLogin,
-}: LoginProps) {
-  const navigate = useNavigate();
+export default function InicioSesion({ alIniciarSesion }: PropiedadesInicioSesion) {
+  const navegar = useNavigate();
 
-  function handleLogin(
-    email: string,
-    password: string
-  ) {
-    const error = onLogin(
-      email,
-      password
-    );
-
-    if (!error) {
-      navigate('/');
-    }
-
+  function manejarInicioSesion(correo: string, contrasena: string) {
+    const error = alIniciarSesion(correo, contrasena);
+    if (!error) navegar('/');
     return error;
   }
 
   return (
-    <main className="login-wrap">
-      <section className="login-card">
-        <div className="login-logo">
+    <main className="contenedor-login">
+      <section className="tarjeta-login">
+        <div className="logo-login">
           <Guitar size={34} />
-
           <span>SONIDO VIVO</span>
         </div>
 
         <h1>Iniciar sesión</h1>
+        <p className="texto-secundario">Ingresa con tu cuenta para acceder según tu perfil.</p>
 
-        <p className="muted">
-          Ingresa con tu cuenta para acceder
-          según tu perfil.
-        </p>
+        <FormularioLogin alIniciarSesion={manejarInicioSesion} />
 
-        <LoginForm
-          onLogin={handleLogin}
-        />
-
-        <p className="demo-note">
+        <p className="nota-demo">
           <Music2 size={15} />
-
-          El sistema valida las credenciales
-          y asigna el perfil automáticamente.
+          El sistema valida las credenciales y asigna el perfil automáticamente.
         </p>
       </section>
     </main>

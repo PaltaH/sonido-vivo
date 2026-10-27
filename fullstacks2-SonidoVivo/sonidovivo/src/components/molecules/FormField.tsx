@@ -1,41 +1,41 @@
 import type { InputHTMLAttributes } from 'react';
-import Input from '../atoms/input';
+import Entrada from '../atoms/Input';
 
-type FormFieldProps = Omit<
+type PropiedadesCampoFormulario = Omit<
   InputHTMLAttributes<HTMLInputElement>,
-  'onChange'
+  'onChange' | 'name' | 'value'
 > & {
-  label: string;
-  name: string;
-  value: string;
-  onValueChange: (value: string) => void;
+  etiqueta: string;
+  nombre: string;
+  valor: string;
+  alCambiarValor: (valor: string) => void;
   error?: string;
 };
 
-export default function FormField({
-  label,
-  name,
-  value,
-  onValueChange,
+export default function CampoFormulario({
+  etiqueta,
+  nombre,
+  valor,
+  alCambiarValor,
   error,
-  ...props
-}: FormFieldProps) {
+  ...propiedades
+}: PropiedadesCampoFormulario) {
   return (
-    <div className="field">
-      <label htmlFor={name}>{label}</label>
+    <div className="campo">
+      <label htmlFor={nombre}>{etiqueta}</label>
 
-      <Input
-        id={name}
-        name={name}
-        value={value}
-        onValueChange={onValueChange}
-        hasError={Boolean(error)}
-        aria-describedby={error ? `${name}-error` : undefined}
-        {...props}
+      <Entrada
+        id={nombre}
+        name={nombre}
+        value={valor}
+        alCambiarValor={alCambiarValor}
+        tieneError={Boolean(error)}
+        aria-describedby={error ? `${nombre}-error` : undefined}
+        {...propiedades}
       />
 
       {error && (
-        <small id={`${name}-error`} className="field-error">
+        <small id={`${nombre}-error`} className="error-campo">
           {error}
         </small>
       )}

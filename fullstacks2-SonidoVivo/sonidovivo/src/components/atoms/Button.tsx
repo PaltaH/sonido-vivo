@@ -1,14 +1,13 @@
 import type { ButtonHTMLAttributes, PropsWithChildren } from 'react';
 
-export default function Button({
-  children,
+export default function Boton({
+  children: contenido,
   className = '',
-  ...props
+  ...propiedades
 }: PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>) {
   return (
-    <button className={`button ${className}`} {...props}>
-      {children}
+    <button className={`boton ${className}`} {...propiedades}>
+      {contenido}
     </button>
   );
-  
 }

@@ -1,141 +1,171 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import type { Product, Role, User } from './types';
-import { initialProducts } from './data/Products';
-import Header from './components/organisms/Header';
-import Login from './pages/Login';
-import Home from './pages/Home';
-import Catalog from './pages/Catalog';
-import Store from './pages/Store';
-import Orders from './pages/Orders';
-import Stock from './pages/Stock';
-import Users from './pages/Users';
-import Button from './components/atoms/Button';
-import { initialUsers } from './data/Usuarios';
+import type { Producto, Rol, Usuario } from './types';
+import { repositorioProductos } from './data/productRepository';
+import Encabezado from './components/organisms/Header';
+import InicioSesion from './pages/Login';
+import Inicio from './pages/Home';
+import Catalogo from './pages/Catalog';
+import Tienda from './pages/Store';
+import Pedidos from './pages/Orders';
+import Inventario from './pages/Stock';
+import Usuarios from './pages/Users';
+import DetalleProducto from './pages/ProductDetail';
+import Boton from './components/atoms/Button';
+import { usuariosIniciales } from './data/Usuarios';
 
-export default function App() {
-  const [session, setSession] = useState<{ role: Role; email: string } | null>(null);
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [users, setUsers] = useState<User[]>(initialUsers);
-  const [cart, setCart] = useState<{ product: Product; qty: number }[]>([]);
-  const [cartOpen, setCartOpen] = useState(false);
-  const location = useLocation();
+export default function Aplicacion() {
+  const [sesion, establecerSesion] = useState<{ rol: Rol; correo: string } | null>(null);
+  const [productos, establecerProductos] = useState<Producto[]>(() => repositorioProductos.obtenerTodos());
+  const [usuarios, establecerUsuarios] = useState<Usuario[]>(usuariosIniciales);
+  const [carrito, establecerCarrito] = useState<{ producto: Producto; cantidad: number }[]>([]);
+  const [carritoAbierto, establecerCarritoAbierto] = useState(false);
+  const ubicacion = useLocation();
 
-  function login(
-  email: string,
-  password: string
-): string | null {
-  const usuario = users.find(
-    (u) =>
-      u.email.toLowerCase() ===
-        email.trim().toLowerCase() &&
-      u.password === password,
-  );
+  function iniciarSesion(correo: string, contrasena: string): string | null {
+    const usuario = usuarios.find(
+      (elemento) =>
+        elemento.correo.toLowerCase() === correo.trim().toLowerCase() &&
+        elemento.contrasena === contrasena,
+    );
 
-  if (!usuario) {
-    return 'Correo o contrase├▒a incorrectos.';
+    if (!usuario) return 'Correo o contraseña incorrectos.';
+    if (usuario.estado !== 'Activo') return 'Esta cuenta está inactiva.';
+
+    establecerSesion({ rol: usuario.rol, correo: usuario.correo });
+    return null;
   }
 
-  if (usuario.status !== 'Activo') {
-    return 'Esta cuenta est├í inactiva.';
+  function cerrarSesion() {
+    establecerSesion(null);
+    establecerCarrito([]);
   }
 
-  setSession({
-    role: usuario.role,
-    email: usuario.email,
-  });
+  function agregarAlCarrito(producto: Producto) {
+    if (producto.Stock < 1) return;
 
-  return null;
-}
+    establecerCarrito((anterior) => {
+      const encontrado = anterior.find((elemento) => elemento.producto.Codigo === producto.Codigo);
 
-  function logout() {
-    setSession(null);
-    setCart([]);
-  }
-
-  function add(p: Product) {
-    if (p.Stock < 1) return;
-
-    setCart((old) => {
-      const found = old.find((i) => i.product.Codigo === p.Codigo);
-
-      if (found) {
-        if (found.qty >= p.Stock) {
-          alert('L├¡mite de stock alcanzado.');
-          return old;
+      if (encontrado) {
+        if (encontrado.cantidad >= producto.Stock) {
+          alert('Límite de stock alcanzado.');
+          return anterior;
         }
 
-        return old.map((i) =>
-          i.product.Codigo === p.Codigo ? { ...i, qty: i.qty + 1 } : i,
+        return anterior.map((elemento) =>
+          elemento.producto.Codigo === producto.Codigo
+            ? { ...elemento, cantidad: elemento.cantidad + 1 }
+            : elemento,
         );
       }
 
-      return [...old, { product: p, qty: 1 }];
+      return [...anterior, { producto, cantidad: 1 }];
     });
   }
 
-  function restock(code: string) {
-    setProducts((old) =>
-      old.map((p) => (p.Codigo === code ? { ...p, Stock: p.Stock + 1 } : p)),
-    );
+  function reabastecer(codigo: string) {
+    const productoActual = productos.find((producto) => producto.Codigo === codigo);
+    if (!productoActual) return;
+    establecerProductos(repositorioProductos.actualizar(codigo, { Stock: productoActual.Stock + 1 }));
   }
 
-  function checkout() {
-    if (!cart.length) return;
+  function crearProducto(producto: Producto): string | null {
+    try {
+      establecerProductos(repositorioProductos.crear(producto));
+      return null;
+    } catch (error) {
+      return error instanceof Error ? error.message : 'No se pudo agregar el producto.';
+    }
+  }
 
-    const insufficient = cart.some(
-      (i) => products.find((p) => p.Codigo === i.product.Codigo)!.Stock < i.qty,
+  function actualizarProducto(codigo: string, producto: Producto): string | null {
+    try {
+      establecerProductos(repositorioProductos.actualizar(codigo, producto));
+      return null;
+    } catch (error) {
+      return error instanceof Error ? error.message : 'No se pudo actualizar el producto.';
+    }
+  }
+
+  function eliminarProducto(codigo: string): string | null {
+    try {
+      establecerProductos(repositorioProductos.eliminar(codigo));
+      establecerCarrito((anterior) => anterior.filter((elemento) => elemento.producto.Codigo !== codigo));
+      return null;
+    } catch (error) {
+      return error instanceof Error ? error.message : 'No se pudo eliminar el producto.';
+    }
+  }
+
+  function confirmarPedido() {
+    if (!carrito.length) return;
+
+    const stockInsuficiente = carrito.some(
+      (elemento) => productos.find((producto) => producto.Codigo === elemento.producto.Codigo)!.Stock < elemento.cantidad,
     );
 
-    if (insufficient) {
-      alert('El stock cambi├│. Revisa tu carrito.');
+    if (stockInsuficiente) {
+      alert('El stock cambió. Revisa tu carrito.');
       return;
     }
 
-    const code = 'SV-' + Math.floor(1000 + Math.random() * 9000);
+    const codigoPedido = 'SV-' + Math.floor(1000 + Math.random() * 9000);
+    let productosActualizados = productos;
 
-    setProducts((old) =>
-      old.map((p) => {
-        const item = cart.find((i) => i.product.Codigo === p.Codigo);
-        return item ? { ...p, Stock: p.Stock - item.qty } : p;
-      }),
-    );
+    for (const elemento of carrito) {
+      const producto = productosActualizados.find((actual) => actual.Codigo === elemento.producto.Codigo);
+      if (producto) {
+        productosActualizados = repositorioProductos.actualizar(producto.Codigo, {
+          Stock: producto.Stock - elemento.cantidad,
+        });
+      }
+    }
 
-    setCart([]);
-    setCartOpen(false);
-    alert(`Pedido confirmado (demo). C├│digo: ${code}`);
+    establecerProductos(productosActualizados);
+    establecerCarrito([]);
+    establecerCarritoAbierto(false);
+    alert(`Pedido confirmado (demo). Código: ${codigoPedido}`);
   }
 
-  const count = cart.reduce((n, i) => n + i.qty, 0);
-  const isLogin = location.pathname === '/login';
+  const cantidadCarrito = carrito.reduce((total, elemento) => total + elemento.cantidad, 0);
+  const esLogin = ubicacion.pathname === '/login';
 
-  if (!session && !isLogin) return <Navigate to="/login" replace />;
-  if (session && isLogin) return <Navigate to="/" replace />;
+  if (!sesion && !esLogin) return <Navigate to="/login" replace />;
+  if (sesion && esLogin) return <Navigate to="/" replace />;
 
-  const role = session?.role || 'CLIENTE';
+  const rol = sesion?.rol || 'CLIENTE';
 
   return (
     <>
-      {session && (
-        <Header
-          role={role}
-          cartCount={count}
-          onCart={() => setCartOpen(true)}
-          logout={logout}
+      {sesion && (
+        <Encabezado
+          rol={rol}
+          cantidadCarrito={cantidadCarrito}
+          alAbrirCarrito={() => establecerCarritoAbierto(true)}
+          cerrarSesion={cerrarSesion}
         />
       )}
 
       <Routes>
-        <Route path="/login" element={<Login onLogin={login} />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/catalogo" element={<Catalog products={products} onAdd={add} />} />
-        <Route path="/tienda" element={<Store />} />
-        <Route path="/pedidos" element={<Orders />} />
+        <Route path="/login" element={<InicioSesion alIniciarSesion={iniciarSesion} />} />
+        <Route path="/" element={<Inicio />} />
+        <Route path="/catalogo" element={<Catalogo productos={productos} alAgregar={agregarAlCarrito} />} />
+        <Route path="/producto/:codigo" element={<DetalleProducto productos={productos} alAgregar={agregarAlCarrito} />} />
+        <Route path="/tienda" element={<Tienda />} />
+        <Route path="/pedidos" element={<Pedidos />} />
         <Route
           path="/stock"
           element={
-            role === 'ADMIN' || role === 'VENDEDOR' ? (
-              <Stock products={products} onRestock={restock} role={role} />
+            rol === 'ADMIN' || rol === 'VENDEDOR' ? (
+              <Inventario
+                productos={productos}
+                alReabastecer={reabastecer}
+                alCrear={crearProducto}
+                alActualizar={actualizarProducto}
+                alEliminar={eliminarProducto}
+                rol={rol}
+              />
             ) : (
               <Navigate to="/" replace />
             )
@@ -144,15 +174,15 @@ export default function App() {
         <Route
           path="/usuarios"
           element={
-            role === 'ADMIN' ? (
-              <Users
-                users={users}
-                onToggle={(id) =>
-                  setUsers((old) =>
-                    old.map((u) =>
-                      u.id === id
-                        ? { ...u, status: u.status === 'Activo' ? 'Inactivo' : 'Activo' }
-                        : u,
+            rol === 'ADMIN' ? (
+              <Usuarios
+                usuarios={usuarios}
+                alCambiarEstado={(id) =>
+                  establecerUsuarios((anteriores) =>
+                    anteriores.map((usuario) =>
+                      usuario.id === id
+                        ? { ...usuario, estado: usuario.estado === 'Activo' ? 'Inactivo' : 'Activo' }
+                        : usuario,
                     ),
                   )
                 }
@@ -165,30 +195,30 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {cartOpen && (
-        <div className="modal-backdrop" onClick={() => setCartOpen(false)}>
-          <section className="cart-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="cart-head">
+      {carritoAbierto && (
+        <div className="fondo-modal" onClick={() => establecerCarritoAbierto(false)}>
+          <section className="modal-carrito" onClick={(evento) => evento.stopPropagation()}>
+            <div className="encabezado-carrito">
               <h2>Carrito de compras</h2>
-              <button onClick={() => setCartOpen(false)}>Ô£ò</button>
+              <button onClick={() => establecerCarritoAbierto(false)}>✕</button>
             </div>
 
-            {cart.length === 0 ? (
-              <p className="muted empty">Tu carrito est├í vac├¡o.</p>
+            {carrito.length === 0 ? (
+              <p className="texto-secundario vacio">Tu carrito está vacío.</p>
             ) : (
-              cart.map((i) => (
-                <div className="cart-line" key={i.product.Codigo}>
+              carrito.map((elemento) => (
+                <div className="linea-carrito" key={elemento.producto.Codigo}>
                   <span>
-                    {i.product.Nombre}
+                    {elemento.producto.Nombre}
                     <small>
-                      {i.qty} ├ù {i.product.Precio.toLocaleString('es-CL')} CLP
+                      {elemento.cantidad} × {elemento.producto.Precio.toLocaleString('es-CL')} CLP
                     </small>
                   </span>
-                  <b>{(i.qty * i.product.Precio).toLocaleString('es-CL')} CLP</b>
+                  <b>{(elemento.cantidad * elemento.producto.Precio).toLocaleString('es-CL')} CLP</b>
                   <button
                     onClick={() =>
-                      setCart((old) =>
-                        old.filter((x) => x.product.Codigo !== i.product.Codigo),
+                      establecerCarrito((anterior) =>
+                        anterior.filter((actual) => actual.producto.Codigo !== elemento.producto.Codigo),
                       )
                     }
                   >
@@ -198,19 +228,18 @@ export default function App() {
               ))
             )}
 
-            <div className="cart-total">
+            <div className="total-carrito">
               <span>Total</span>
               <b>
-                {cart
-                  .reduce((n, i) => n + i.qty * i.product.Precio, 0)
-                  .toLocaleString('es-CL')}{' '}
-                CLP
+                {carrito
+                  .reduce((total, elemento) => total + elemento.cantidad * elemento.producto.Precio, 0)
+                  .toLocaleString('es-CL')} CLP
               </b>
             </div>
 
-            <Button className="full" disabled={!cart.length} onClick={checkout}>
+            <Boton className="ancho-completo" disabled={!carrito.length} onClick={confirmarPedido}>
               Confirmar pedido
-            </Button>
+            </Boton>
           </section>
         </div>
       )}

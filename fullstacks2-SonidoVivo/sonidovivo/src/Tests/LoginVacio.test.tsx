@@ -1,15 +1,13 @@
 // @vitest-environment jsdom
 
-import '@testing-library/jest-dom/vitest';
-
 import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
-import LoginForm from '../components/organisms/LoginForm';
+import FormularioLogin from '../components/organisms/LoginForm';
 
 test('muestra errores cuando se intenta iniciar sesión con los campos vacios', () => {
   const onLogin = vi.fn();
 
-  render(<LoginForm onLogin={onLogin} />);
+  render(<FormularioLogin alIniciarSesion={onLogin} />);
 
   fireEvent.click(
     screen.getByRole('button', {

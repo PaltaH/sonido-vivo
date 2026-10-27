@@ -1,28 +1,28 @@
-import type { User } from '../types';
+import type { Usuario } from '../types';
 
-export const initialUsers: User[] = [
+export const usuariosIniciales: Usuario[] = [
   {
     id: 1,
-    username: 'admin_general',
-    email: 'admin@sonidovivo.cl',
-    password: 'admin123',
-    role: 'ADMIN',
-    status: 'Activo',
+    nombreUsuario: 'admin_general',
+    correo: 'admin@sonidovivo.cl',
+    contrasena: 'admin123',
+    rol: 'ADMIN',
+    estado: 'Activo',
   },
   {
     id: 2,
-    username: 'vendedor_vina',
-    email: 'vendedor1@sonidovivo.cl',
-    password: 'vendedor123',
-    role: 'VENDEDOR',
-    status: 'Activo',
+    nombreUsuario: 'vendedor_vina',
+    correo: 'vendedor1@sonidovivo.cl',
+    contrasena: 'vendedor123',
+    rol: 'VENDEDOR',
+    estado: 'Activo',
   },
   {
     id: 3,
-    username: 'cliente_demo',
-    email: 'cliente@gmail.com',
-    password: 'cliente123',
-    role: 'CLIENTE',
-    status: 'Activo',
+    nombreUsuario: 'cliente_demo',
+    correo: 'cliente@gmail.com',
+    contrasena: 'cliente123',
+    rol: 'CLIENTE',
+    estado: 'Activo',
   },
 ];

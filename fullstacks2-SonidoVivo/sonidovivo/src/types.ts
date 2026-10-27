@@ -1,6 +1,6 @@
-export type Role = 'CLIENTE' | 'VENDEDOR' | 'ADMIN';
+export type Rol = 'CLIENTE' | 'VENDEDOR' | 'ADMIN';
 
-export type Product = {
+export type Producto = {
   Codigo: string;
   Categoria: string;
   Nombre: string;
@@ -11,11 +11,11 @@ export type Product = {
   Imagen: string;
 };
 
-export type User = {
+export type Usuario = {
   id: number;
-  username: string;
-  email: string;
-  password: string;
-  role: Role;
-  status: 'Activo' | 'Inactivo';
+  nombreUsuario: string;
+  correo: string;
+  contrasena: string;
+  rol: Rol;
+  estado: 'Activo' | 'Inactivo';
 };

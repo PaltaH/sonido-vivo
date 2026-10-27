@@ -1,49 +1,41 @@
-import type { User } from '../types';
-import Button from '../components/atoms/Button';
+import type { Usuario } from '../types';
+import Boton from '../components/atoms/Button';
 
-interface UsersProps {
-  users: User[];
-  onToggle: (id: number) => void;
+interface PropiedadesUsuarios {
+  usuarios: Usuario[];
+  alCambiarEstado: (id: number) => void;
 }
 
-export default function Users({ users, onToggle }: UsersProps) {
+export default function Usuarios({ usuarios, alCambiarEstado }: PropiedadesUsuarios) {
   return (
-    <main className="page">
-      <section className="page-heading">
-        <span className="eyebrow">SOLO ADMINISTRADOR</span>
+    <main className="pagina">
+      <section className="encabezado-pagina">
+        <span className="etiqueta-superior">SOLO ADMINISTRADOR</span>
         <h1>Gestión de usuarios</h1>
         <p>Revisa las cuentas de ejemplo y cambia su estado.</p>
       </section>
 
-      <div className="table-wrap">
+      <div className="contenedor-tabla">
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Usuario</th>
-              <th>Correo</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Acción</th>
+              <th>ID</th><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acción</th>
             </tr>
           </thead>
-
           <tbody>
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>{u.username}</td>
-                <td>{u.email}</td>
-                <td>
-                  <span className="role-pill">{u.role}</span>
-                </td>
-                <td className={u.status === 'Activo' ? 'stock' : 'out'}>
-                  {u.status}
+            {usuarios.map((usuario) => (
+              <tr key={usuario.id}>
+                <td>{usuario.id}</td>
+                <td>{usuario.nombreUsuario}</td>
+                <td>{usuario.correo}</td>
+                <td><span className="etiqueta-rol">{usuario.rol}</span></td>
+                <td className={usuario.estado === 'Activo' ? 'estado-disponible' : 'estado-agotado'}>
+                  {usuario.estado}
                 </td>
                 <td>
-                  <Button className="small secondary" onClick={() => onToggle(u.id)}>
-                    {u.status === 'Activo' ? 'Desactivar' : 'Activar'}
-                  </Button>
+                  <Boton className="pequeno secundario" onClick={() => alCambiarEstado(usuario.id)}>
+                    {usuario.estado === 'Activo' ? 'Desactivar' : 'Activar'}
+                  </Boton>
                 </td>
               </tr>
             ))}

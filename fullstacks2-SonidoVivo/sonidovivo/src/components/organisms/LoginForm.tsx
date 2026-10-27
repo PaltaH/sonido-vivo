@@ -1,136 +1,95 @@
 import { useState } from 'react';
-import Button from '../atoms/Button';
-import FormField from '../molecules/FormField';
+import Boton from '../atoms/Button';
+import CampoFormulario from '../molecules/FormField';
 
-type LoginFormProps = {
-  onLogin: (email: string, password: string) => string | null;
+type PropiedadesFormularioLogin = {
+  alIniciarSesion: (correo: string, contrasena: string) => string | null;
 };
 
-type FormErrors = {
-  email?: string;
-  password?: string;
+type ErroresFormulario = {
+  correo?: string;
+  contrasena?: string;
 };
 
-export default function LoginForm({ onLogin }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function FormularioLogin({ alIniciarSesion }: PropiedadesFormularioLogin) {
+  const [correo, establecerCorreo] = useState('');
+  const [contrasena, establecerContrasena] = useState('');
+  const [errores, establecerErrores] = useState<ErroresFormulario>({});
+  const [errorLogin, establecerErrorLogin] = useState('');
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [loginError, setLoginError] = useState('');
+  function validar() {
+    const nuevosErrores: ErroresFormulario = {};
+    const expresionCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  function validate() {
-    const newErrors: FormErrors = {};
-
-    const emailRegex =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (email.trim() === '') {
-      newErrors.email =
-        'Debe ingresar su correo electrónico.';
-    } else if (!emailRegex.test(email.trim())) {
-      newErrors.email =
-        'Debe ingresar un correo electrónico válido.';
+    if (correo.trim() === '') {
+      nuevosErrores.correo = 'Debe ingresar su correo electrónico.';
+    } else if (!expresionCorreo.test(correo.trim())) {
+      nuevosErrores.correo = 'Debe ingresar un correo electrónico válido.';
     }
 
-    if (password.trim() === '') {
-      newErrors.password =
-        'Debe ingresar su contraseña.';
-    } else if (password.length < 6) {
-      newErrors.password =
-        'La contraseña debe tener al menos 6 caracteres.';
+    if (contrasena.trim() === '') {
+      nuevosErrores.contrasena = 'Debe ingresar su contraseña.';
+    } else if (contrasena.length < 6) {
+      nuevosErrores.contrasena = 'La contraseña debe tener al menos 6 caracteres.';
     }
 
-    return newErrors;
+    return nuevosErrores;
   }
 
-  function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  function enviar(evento: React.FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    establecerErrorLogin('');
 
-    setLoginError('');
+    const nuevosErrores = validar();
+    establecerErrores(nuevosErrores);
 
-    const newErrors = validate();
+    if (Object.keys(nuevosErrores).length > 0) return;
 
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      return;
-    }
-
-    const error = onLogin(
-      email.trim(),
-      password
-    );
-
-    if (error) {
-      setLoginError(error);
-    }
+    const error = alIniciarSesion(correo.trim(), contrasena);
+    if (error) establecerErrorLogin(error);
   }
 
   return (
-    <form onSubmit={submit} noValidate>
-      <FormField
-        label="Correo electrónico"
+    <form onSubmit={enviar} noValidate>
+      <CampoFormulario
+        etiqueta="Correo electrónico"
         type="email"
-        name="email"
+        nombre="correo"
         placeholder="tu@correo.cl"
-        value={email}
-        onValueChange={(value) => {
-          setEmail(value);
-
-          if (errors.email) {
-            setErrors((old) => ({
-              ...old,
-              email: undefined,
-            }));
+        valor={correo}
+        alCambiarValor={(valor) => {
+          establecerCorreo(valor);
+          if (errores.correo) {
+            establecerErrores((anteriores) => ({ ...anteriores, correo: undefined }));
           }
-
-          if (loginError) {
-            setLoginError('');
-          }
+          if (errorLogin) establecerErrorLogin('');
         }}
-        error={errors.email}
+        error={errores.correo}
         autoComplete="email"
       />
 
-      <FormField
-        label="Contraseña"
+      <CampoFormulario
+        etiqueta="Contraseña"
         type="password"
-        name="password"
+        nombre="contrasena"
         placeholder="Tu contraseña"
-        value={password}
-        onValueChange={(value) => {
-          setPassword(value);
-
-          if (errors.password) {
-            setErrors((old) => ({
-              ...old,
-              password: undefined,
-            }));
+        valor={contrasena}
+        alCambiarValor={(valor) => {
+          establecerContrasena(valor);
+          if (errores.contrasena) {
+            establecerErrores((anteriores) => ({ ...anteriores, contrasena: undefined }));
           }
-
-          if (loginError) {
-            setLoginError('');
-          }
+          if (errorLogin) establecerErrorLogin('');
         }}
-        error={errors.password}
+        error={errores.contrasena}
         autoComplete="current-password"
       />
 
-      {loginError && (
-        <p
-          className="login-error"
-          role="alert"
-        >
-          {loginError}
-        </p>
-      )}
+      {errorLogin && <p className="error-login" role="alert">{errorLogin}</p>}
 
-      <Button
-        type="submit"
-        className="full"
-      >
+      <Boton type="submit" className="ancho-completo">
         Entrar al sistema
-      </Button>
+      </Boton>
     </form>
   );
 }

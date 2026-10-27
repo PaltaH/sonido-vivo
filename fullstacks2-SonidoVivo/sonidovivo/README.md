@@ -1,75 +1,77 @@
-# React + TypeScript + Vite
+# Sonido Vivo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sonido Vivo es un proyecto académico desarrollado con React, Vite y TypeScript. La aplicación simula una tienda de instrumentos musicales y permite ingresar con distintos tipos de usuario según su rol.
 
-Currently, two official plugins are available:
+Durante el desarrollo se aplicaron contenidos vistos en clases, como componentes reutilizables, formularios con validaciones, navegación entre páginas, manejo de estado, CRUD de productos y pruebas unitarias.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Cómo ejecutar el proyecto
 
-## React Compiler
+Primero instala las dependencias:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Luego inicia la aplicación:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run dev
 ```
+
+## Pruebas
+
+Para ejecutar las pruebas unitarias:
+
+```bash
+npm run test
+```
+
+Para generar el reporte de cobertura:
+
+```bash
+npm run test:coverage
+```
+
+Para comprobar que el proyecto compile correctamente:
+
+```bash
+npm run build
+```
+
+Las pruebas se encuentran dentro de `src/Tests`.
+
+## Funcionalidades
+
+- Inicio de sesión con distintos roles.
+- Catálogo de productos.
+- Búsqueda y filtros por categoría.
+- Vista de detalle de cada producto.
+- Carrito de compras.
+- Consulta de pedidos.
+- Gestión de usuarios.
+- Control de inventario.
+- Creación, modificación y eliminación de productos.
+- Diseño adaptable a distintos tamaños de pantalla.
+- Pruebas unitarias de las principales funcionalidades.
+
+## Usuarios de prueba
+
+**Administrador**  
+Correo: `admin@sonidovivo.cl`  
+Contraseña: `admin123`
+
+**Vendedor**  
+Correo: `vendedor1@sonidovivo.cl`  
+Contraseña: `vendedor123`
+
+**Cliente**  
+Correo: `cliente@gmail.com`  
+Contraseña: `cliente123`
+
+## Sobre los nombres del código
+
+Los nombres creados por nosotros se dejaron principalmente en español para que el código sea más fácil de leer. Por ejemplo: `Producto`, `Usuario`, `repositorioProductos`, `agregarAlCarrito`, `productosFiltrados`, `TarjetaProducto` y clases CSS como `tarjeta-producto` o `encabezado-pagina`.
+
+Palabras propias de React, TypeScript, HTML, CSS, Bootstrap o Vitest se mantienen en inglés porque forman parte de esas herramientas y cambiarlas haría que el proyecto dejara de funcionar.
+
+Los datos son simulados y se mantienen en memoria mientras la aplicación está abierta.

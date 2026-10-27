@@ -1,43 +1,49 @@
-import type { Product } from '../../types';
-import Button from '../atoms/Button';
+import { Link, useInRouterContext } from 'react-router-dom';
+import type { Producto } from '../../types';
+import Boton from '../atoms/Button';
 
-interface ProductCardProps {
-  product: Product;
-  onAdd: (p: Product) => void;
+interface PropiedadesTarjetaProducto {
+  producto: Producto;
+  alAgregar: (producto: Producto) => void;
 }
 
-export default function ProductCard({ product, onAdd }: ProductCardProps) {
+export default function TarjetaProducto({ producto, alAgregar }: PropiedadesTarjetaProducto) {
+  const dentroDelRouter = useInRouterContext();
+
   return (
-    <article className="product-card">
-      <div className="product-image">
+    <article className="tarjeta-producto">
+      <div className="imagen-producto">
         <img
-          src={product.Imagen}
-          alt={product.Nombre}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
+          src={producto.Imagen}
+          alt={producto.Nombre}
+          onError={(evento) => {
+            evento.currentTarget.style.display = 'none';
           }}
         />
-        <span>{product.Categoria}</span>
+        <span>{producto.Categoria}</span>
       </div>
 
-      <div className="product-info">
-        <h3>{product.Nombre}</h3>
-        <p className="muted">
-          {product.Marca} · {product.Modelo}
-        </p>
-        <strong className="price">
-          {product.Precio.toLocaleString('es-CL', {
+      <div className="informacion-producto">
+        <h3>{producto.Nombre}</h3>
+        <p className="texto-secundario">{producto.Marca} · {producto.Modelo}</p>
+        <strong className="precio">
+          {producto.Precio.toLocaleString('es-CL', {
             style: 'currency',
             currency: 'CLP',
             maximumFractionDigits: 0,
           })}
         </strong>
-        <p className={product.Stock > 0 ? 'stock' : 'out'}>
-          {product.Stock > 0 ? `${product.Stock} unidades disponibles` : 'Agotado'}
+        <p className={producto.Stock > 0 ? 'estado-disponible' : 'estado-agotado'}>
+          {producto.Stock > 0 ? `${producto.Stock} unidades disponibles` : 'Agotado'}
         </p>
-        <Button disabled={product.Stock < 1} onClick={() => onAdd(product)}>
+        {dentroDelRouter ? (
+          <Link className="enlace-detalle" to={`/producto/${producto.Codigo}`}>Ver detalle</Link>
+        ) : (
+          <span className="enlace-detalle">Ver detalle</span>
+        )}
+        <Boton disabled={producto.Stock < 1} onClick={() => alAgregar(producto)}>
           Agregar al carrito
-        </Button>
+        </Boton>
       </div>
     </article>
   );
